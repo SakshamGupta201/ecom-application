@@ -1,6 +1,7 @@
 package com.app.ecom_application.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -23,10 +24,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(int id) {
+    public Optional<User> getUserById(int id) {
         return users.stream()
                 .filter(user -> user.getId() == id)
-                .findFirst()
-                .orElse(null);
+                .findFirst();
+    }
+
+    @Override
+    public Optional<User> updateUser(int id, User user) {
+        return getUserById(id)
+                .map(existingUser -> {
+                    existingUser.setFirstName(user.getFirstName());
+                    existingUser.setLastName(user.getLastName());
+                    return existingUser;
+                });
     }
 }
