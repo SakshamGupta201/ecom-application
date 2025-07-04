@@ -7,4 +7,5 @@ import com.app.ecom_application.User;
 public interface UserService {
     List<User> getUsers();
     User addUser(User user);
+    User getUserById(int id);
 }
