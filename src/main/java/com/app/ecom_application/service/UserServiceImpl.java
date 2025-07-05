@@ -5,38 +5,46 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.app.ecom_application.User;
+import com.app.ecom_application.models.User;
+import com.app.ecom_application.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final List<User> users = new java.util.ArrayList<>();
+    private final UserRepository userRepository;
 
     @Override
     public List<User> getUsers() {
-        return users;
+        return userRepository.findAll();
     }
 
     @Override
+    @Transactional
     public User addUser(User user) {
-        users.add(user);
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
     public Optional<User> getUserById(int id) {
-        return users.stream()
-                .filter(user -> user.getId() == id)
-                .findFirst();
+        return userRepository.findById(id);
     }
 
     @Override
+    @Transactional
     public Optional<User> updateUser(int id, User user) {
-        return getUserById(id)
+        return userRepository.findById(id)
                 .map(existingUser -> {
                     existingUser.setFirstName(user.getFirstName());
                     existingUser.setLastName(user.getLastName());
-                    return existingUser;
+                    existingUser.setEmail(user.getEmail());
+                    existingUser.setPhone(user.getPhone());
+                    existingUser.setRole(user.getRole());
+                    existingUser.setAddress(user.getAddress());
+                    return userRepository.save(existingUser);
                 });
     }
 }

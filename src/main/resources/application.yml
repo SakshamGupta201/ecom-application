@@ -1,0 +1,15 @@
+spring:
+    application:
+        name: ecom-application
+    h2:
+        console:
+            enabled: true
+    datasource:
+        url: jdbc:h2:mem:testdb
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+
+server:
+    port: 8082

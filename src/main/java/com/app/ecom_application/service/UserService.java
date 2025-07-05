@@ -3,7 +3,7 @@ package com.app.ecom_application.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.app.ecom_application.User;
+import com.app.ecom_application.models.User;
 
 public interface UserService {
     List<User> getUsers();
