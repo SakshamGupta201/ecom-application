@@ -25,7 +25,7 @@ public class Product {
     private Double price;
     private Integer stockQuantity;
     private String imageUrl;
-    private Boolean isActive = false;
+    private Boolean isActive = true;
     @CurrentTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp

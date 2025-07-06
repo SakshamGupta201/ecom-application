@@ -8,4 +8,6 @@ public class ProductRequestDTO {
     private String description;
     private Double price;
     private Integer stockQuantity; 
+    private Boolean isActive;
+    private String imageUrl;
 }

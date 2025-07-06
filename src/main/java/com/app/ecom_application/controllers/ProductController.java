@@ -28,8 +28,9 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequest) {
-        ProductResponseDTO createdProduct = productService.createProduct(productRequest);
-        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
+        return productService.createProduct(productRequest)
+                .map(createdProduct -> new ResponseEntity<>(createdProduct, HttpStatus.CREATED))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @GetMapping
@@ -40,20 +41,27 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Integer id) {
-        ProductResponseDTO product = productService.getProductById(id);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        return productService.getProductById(id)
+                .map(product -> new ResponseEntity<>(product, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Integer id, @RequestBody ProductRequestDTO productRequest) {
-        ProductResponseDTO updatedProduct = productService.updateProduct(id, productRequest);
-        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Integer id,
+            @RequestBody ProductRequestDTO productRequest) {
+        return productService.updateProduct(id, productRequest)
+                .map(updatedProduct -> new ResponseEntity<>(updatedProduct, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
-        productService.deleteProduct(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<String> deleteProduct(@PathVariable Integer id) {
+        return productService.getProductById(id)
+                .map(_ -> {
+                    productService.deleteProduct(id);
+                    return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+                })
+                .orElseGet(() -> new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND));
     }
-    
+
 }

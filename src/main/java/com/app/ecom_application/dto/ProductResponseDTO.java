@@ -9,4 +9,8 @@ public class ProductResponseDTO {
     private String description;
     private Double price;
     private Integer stockQuantity; 
+    private Boolean isActive;
+    private String imageUrl;
+    private String createdAt;
+    private String updatedAt;
 }

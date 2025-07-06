@@ -1,6 +1,7 @@
 package com.app.ecom_application.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -17,45 +18,44 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public ProductResponseDTO createProduct(ProductRequestDTO productRequest) {
-        Product product = mapToProduct(productRequest);
+    public Optional<ProductResponseDTO> createProduct(ProductRequestDTO productRequest) {
+        Product product = mapToProduct(productRequest, null);
         Product savedProduct = productRepository.save(product);
-        return mapToResponse(savedProduct);
+        return Optional.of(mapToResponse(savedProduct));
     }
 
     @Override
-    public ProductResponseDTO getProductById(Integer id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
-        return mapToResponse(product);
+    public Optional<ProductResponseDTO> getProductById(Integer id) {
+        return productRepository.findById(id)
+                .map(this::mapToResponse);
     }
 
     @Override
     public List<ProductResponseDTO> getAllProducts() {
         return productRepository.findAll().stream()
                 .map(this::mapToResponse)
+                .filter(product -> product.getIsActive())
                 .toList();
     }
 
     @Override
-    public ProductResponseDTO updateProduct(Integer id, ProductRequestDTO productRequest) {
-        Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
-
-        existingProduct.setName(productRequest.getName());
-        existingProduct.setDescription(productRequest.getDescription());
-        existingProduct.setPrice(productRequest.getPrice());
-        existingProduct.setStockQuantity(productRequest.getStockQuantity());
-
-        Product updatedProduct = productRepository.save(existingProduct);
-        return mapToResponse(updatedProduct);
+    public Optional<ProductResponseDTO> updateProduct(Integer id, ProductRequestDTO productRequest) {
+        return productRepository.findById(id)
+                .map(existingProduct -> {
+                    Product updatedProductEntity = mapToProduct(productRequest, existingProduct);
+                    Product updatedProduct = productRepository.save(updatedProductEntity);
+                    return mapToResponse(updatedProduct);
+                });
     }
 
     @Override
-    public void deleteProduct(Integer id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
-        productRepository.delete(product);
+    public boolean deleteProduct(Integer id) {
+        return productRepository.findById(id)
+                .map(product -> {
+                    productRepository.delete(product);
+                    return true;
+                })
+                .orElse(false);
     }
 
     private ProductResponseDTO mapToResponse(Product product) {
@@ -65,15 +65,24 @@ public class ProductServiceImpl implements ProductService {
         response.setDescription(product.getDescription());
         response.setPrice(product.getPrice());
         response.setStockQuantity(product.getStockQuantity());
+        response.setIsActive(product.getIsActive());
+        response.setImageUrl(product.getImageUrl());
+        response.setCreatedAt(product.getCreatedAt().toString());
+        response.setUpdatedAt(product.getUpdatedAt().toString());
         return response;
     }
 
-    private Product mapToProduct(ProductRequestDTO productRequest) {
-        Product product = new Product();
+    /**
+     * Maps ProductRequestDTO to Product entity. If existingProduct is null, creates new Product, else updates the existing one.
+     */
+    private Product mapToProduct(ProductRequestDTO productRequest, Product existingProduct) {
+        Product product = (existingProduct == null) ? new Product() : existingProduct;
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
         product.setPrice(productRequest.getPrice());
         product.setStockQuantity(productRequest.getStockQuantity());
+        product.setIsActive(productRequest.getIsActive());
+        product.setImageUrl(productRequest.getImageUrl());
         return product;
     }
 }
