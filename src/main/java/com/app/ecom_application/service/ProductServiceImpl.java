@@ -45,7 +45,8 @@ public class ProductServiceImpl implements ProductService {
                     Product updatedProductEntity = mapToProduct(productRequest, existingProduct);
                     Product updatedProduct = productRepository.save(updatedProductEntity);
                     return mapToResponse(updatedProduct);
-                });
+                })
+                .filter(updatedProduct -> updatedProduct.getIsActive() != null && updatedProduct.getIsActive());
     }
 
     @Override
@@ -73,7 +74,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * Maps ProductRequestDTO to Product entity. If existingProduct is null, creates new Product, else updates the existing one.
+     * Maps ProductRequestDTO to Product entity. If existingProduct is null, creates
+     * new Product, else updates the existing one.
      */
     private Product mapToProduct(ProductRequestDTO productRequest, Product existingProduct) {
         Product product = (existingProduct == null) ? new Product() : existingProduct;
