@@ -33,25 +33,26 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponseDTO> getAllProducts() {
         return productRepository.findAll().stream()
-                .map(this::mapToResponse)
                 .filter(product -> product.getIsActive())
+                .map(this::mapToResponse)
                 .toList();
     }
 
     @Override
     public Optional<ProductResponseDTO> updateProduct(Integer id, ProductRequestDTO productRequest) {
         return productRepository.findById(id)
+                .filter(existingProduct -> existingProduct.getIsActive() != null && existingProduct.getIsActive())
                 .map(existingProduct -> {
                     Product updatedProductEntity = mapToProduct(productRequest, existingProduct);
                     Product updatedProduct = productRepository.save(updatedProductEntity);
                     return mapToResponse(updatedProduct);
-                })
-                .filter(updatedProduct -> updatedProduct.getIsActive() != null && updatedProduct.getIsActive());
+                });
     }
 
     @Override
     public boolean deleteProduct(Integer id) {
         return productRepository.findById(id)
+                .filter(product -> product.getIsActive() != null && product.getIsActive())
                 .map(product -> {
                     productRepository.delete(product);
                     return true;

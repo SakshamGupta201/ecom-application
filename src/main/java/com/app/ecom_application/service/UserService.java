@@ -3,12 +3,12 @@ package com.app.ecom_application.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.app.ecom_application.dto.UserRequest;
-import com.app.ecom_application.dto.UserResponse;
+import com.app.ecom_application.dto.UserRequestDTO;
+import com.app.ecom_application.dto.UserResponseDTO;
 
 public interface UserService {
-    List<UserResponse> getUsers();
-    UserResponse addUser(UserRequest user);
-    Optional<UserResponse> getUserById(int id);
-    Optional<UserResponse> updateUser(int id, UserRequest user);
+    List<UserResponseDTO> getUsers();
+    UserResponseDTO addUser(UserRequestDTO user);
+    Optional<UserResponseDTO> getUserById(int id);
+    Optional<UserResponseDTO> updateUser(int id, UserRequestDTO user);
 }
