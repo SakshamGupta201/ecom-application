@@ -1,5 +1,6 @@
 package com.app.ecom_application.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,7 +30,7 @@ public class CartItem {
     private Product product;
 
     private Integer quantity;
-    private Double price;
+    private BigDecimal price;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
